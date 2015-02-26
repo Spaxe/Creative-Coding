@@ -263,14 +263,13 @@ block_size = 8 / screen_scale
 
 def setup():
     global words, screen_scale
-#     size(1920 / screen_scale, 1080 / screen_scale, P2D)
-    size(1920 / screen_scale, 1080 / screen_scale, "processing.core.PGraphicsRetina2D")
+    size(1920 / screen_scale, 1080 / screen_scale, P2D)
+#     size(1920 / screen_scale, 1080 / screen_scale, "processing.core.PGraphicsRetina2D")
     colorMode(HSB, 1.0)
     textFont(createFont('SourceSansPro-ExtraLight', block_size))
     textSize(block_size)
     noLoop()
     words = load_corpus('Laughter_Bergson.txt')
-    print PFont.list()
     
 def load_corpus(path):
     with open(path, 'r') as f:
