@@ -263,7 +263,7 @@ block_size = 8 / screen_scale
 
 def setup():
     global words, screen_scale
-    size(1920 / screen_scale, 1080 / screen_scale, P2D)
+    size(1920 / screen_scale, 1080 / screen_scale)
 #     size(1920 / screen_scale, 1080 / screen_scale, "processing.core.PGraphicsRetina2D")
     colorMode(HSB, 1.0)
     textFont(createFont('SourceSansPro-ExtraLight', block_size))
@@ -332,13 +332,13 @@ def draw():
         lines = height/block_size
         for y in range(lines+1):
             dc = float(y)/lines/10
-            stroke(0.5-dc*2, 0.2, 0.4+dc)
-            strokeWeight(block_size)
-            line(0, y*block_size, width, y*block_size)
+            fill(0.5-dc*2, 0.2, 0.4+dc, 1)
+            noStroke()
+            rect(0, y*block_size, width, (y+1)*block_size)
     
     with pushMatrix():
 #         padding = (10.0 / screen_scale, -10.0 / screen_scale)
-        padding = (10.0 / screen_scale, 0)
+        padding = (10 / screen_scale, 0)
         translate(*padding)
         draw_word()
             
