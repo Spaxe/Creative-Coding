@@ -48,5 +48,5 @@ def draw():
     pass
     
 def reset():
-    background(0)
+    background(1)
     noStroke()
