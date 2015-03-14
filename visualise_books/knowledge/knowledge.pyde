@@ -1,5 +1,9 @@
 book_name = 'The Problems of Philosophy_Russell.txt'
 words = []
+
+screen_scale = 1
+web_connection_threshold = 200
+
 important_words = ['knowledge', 'sense', 'things', 'know', 'data', 'true', 'fact', 'object', 'physical', 'belief']
 word_count = [(u'knowledge', 306),
  (u'sense', 234),
@@ -242,10 +246,8 @@ word_count = [(u'knowledge', 306),
  (u'next', 19),
  (u'becomes', 19)]
 freq_words = {k: v for k, v in word_count}
-
-screen_scale = 1
-
 coordinates = {k: [] for k in important_words}
+all_coordinates = []
 block_size = 8 / screen_scale
 
 def setup():
@@ -276,46 +278,58 @@ def draw_word():
             x = 0
             y -= block_size
 
-        with pushStyle():
-            if word in coordinates:
-                fill(generate_color(word), 0.7, 1, 1-float(y)/height)
-                coordinates[word].append((x, y))
-            else:
-                fill(1, 0, 1, 1-float(y)/height)
-            text(word, x, y)
+        if word in coordinates:
+            coordinates[word].append((x, y))
             
+        all_coordinates.append((word, x, y))
+        
         x += textWidth(word) + spacing
 
 def draw_star(word, xy):
     with pushStyle():
         noStroke()
-        count = freq_words[word]
-        depth = -1
+        ellipseMode(CENTER)
         for x, y in xy:
             dy = pow(float(y) / height, 2)
             dx = pow(float(x) / width, 2)
             a = 0.9
             s = 0.7
+            fill(generate_color(word), s, 0.9-dy/2, a-dy)
+            ellipse(x+block_size/2, y+block_size/2, block_size, block_size)
+            depth = -1
             with pushMatrix():
-                fill(generate_color(word), s, 0.9-dy/2, a-(dy+dx)/2)
-                translate(int(x/block_size)*block_size, y+depth*block_size)
-                if x != 0:
-                    rotate(atan(float(y)/x))
+                translate(int(x/block_size)*block_size, y)
+                if x != width:
+                    rotate(-atan(float(y)/(width-x)))
                 else:
                     rotate(PI/2)
-                rect(0, 0, block_size, block_size)
                 fill(generate_color(word), s-0.2, 1-dy, 1-(dy+dx)*1.5/2)
                 rect(0, 0, block_size, -height)
             
+            for _x, _y in xy:
+                if dist(x, y, _x, _y) < web_connection_threshold:
+                    noFill()
+                    stroke(generate_color(word), s-0.1, 0.8-dy/4, a-dy*2)
+                    line(x+block_size/2, y+block_size/2, _x+block_size/2, _y+block_size/2)
+                
+                
 def draw_land():
     with pushStyle():
         noStroke()
-        for i, (_, c) in enumerate(sorted(word_count)):
+        for i, (w, c) in enumerate(sorted(word_count)):
             c /= screen_scale
             fill(0, 0, 0, 0.2)
             rect(i*block_size, height-c, block_size, c)
             fill(1, 0, 1, 1.2*c/height)
             rect(i*block_size, height-c, block_size, block_size)
+            with pushMatrix():
+                translate((i+1)*block_size-1, height-1)
+                rotate(-PI/2)
+                if w in important_words:
+                    fill(generate_color(w), 0.8, 1, 0.6)
+                else:
+                    fill(0, 0, 1, 0.5)
+                text(w, 0, 0)
     
 def draw():
     background(0)
@@ -324,12 +338,12 @@ def draw():
         colorMode(RGB, 1.0)
         lines = height/block_size
         with pushMatrix():
-            rotate(PI/16)
-            for y in range(-20, lines+21):
-                dc = map(y, -20, lines+21, 0, 1) * 0.2
-                fill(0.1-dc/2, 0.4-dc, 0.8-dc, 1)
+#             rotate(PI/16)
+            for y in range(lines+1):
+                dc = map(y, 0, lines+1, 0, 1) * 0.2
+                fill(0.1+dc/2, 0.3+dc, 0.6+dc*2, 1)
                 noStroke()
-                rect(-1000, y*block_size, width+1000, (y+1)*block_size)
+                rect(0, y*block_size, width, (y+1)*block_size)
     
     with pushMatrix():
 #         padding = (10.0 / screen_scale, -10.0 / screen_scale)
@@ -339,6 +353,14 @@ def draw():
             
         for word, xy in coordinates.iteritems():
             draw_star(word, xy)
+            
+        with pushStyle():
+            for word, x, y in all_coordinates:
+                if word in important_words:
+                    fill(generate_color(word), 0.7, 1, 1-float(y)/height)
+                else:
+                    fill(1, 0, 1, 1-float(y)/height)
+                text(word, x, y)
             
     draw_land()
             
