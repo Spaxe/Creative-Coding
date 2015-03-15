@@ -299,10 +299,10 @@ def draw_star(word, xy):
             depth = -1
             with pushMatrix():
                 translate(int(x/block_size)*block_size, y)
-                if x != width:
-                    rotate(-atan(float(y)/(width-x)))
+                if x != 0:
+                    rotate(-atan(float(y)/(x)))
                 else:
-                    rotate(PI/2)
+                    rotate(-PI/2)
                 fill(generate_color(word), s-0.2, 1-dy, 1-(dy+dx)*1.5/2)
                 rect(0, 0, block_size, -height)
             
